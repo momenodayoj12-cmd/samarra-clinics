@@ -4,8 +4,8 @@ const doctorsData = [
         name: "د. مؤمن السامرائي",
         specialty: "طب الأسنان",
         symptoms: ["وجع أسنان", "تجميل", "نزيف لثة"],
-        phone: "07701234567",
-        whatsapp: "9647701234567",
+        phone: "07703460111",
+        whatsapp: "9647703460111",
         address: "سامراء - شارع الأطباء",
         lat: 34.1961, lng: 43.8920, // إحداثيات تقريبية في سامراء
         isVIP: true,
@@ -50,4 +50,5 @@ const doctorsData = [
         thanksCount: 15,
         dailyTip: ""
     }
+
 ];
