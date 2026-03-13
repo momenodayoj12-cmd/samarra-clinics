@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل عيادات سامراء | طبيبك في جيبك</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d6efd">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <h1><i class="fa-solid fa-stethoscope"></i> دليل عيادات سامراء</h1>
+                <div class="header-buttons">
+                    <button id="showFavoritesBtn" class="btn-fav-header">
+                        <i class="fa-solid fa-heart"></i> أطبائي
+                    </button>
+                    <button id="nightPharmaciesBtn" class="btn-night">
+                        <i class="fa-solid fa-moon"></i> الخافرة
+                    </button>
+                </div>
+            </div>
+
+            <div id="dailyTip" class="daily-tip-box"></div>
+
+            <div class="search-filter-container">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="ابحث باسم الطبيب...">
+                </div>
+
+                <div class="filter-box">
+                    <select id="specialtyFilter">
+                        <option value="all">جميع التخصصات</option>
+                    </select>
+                </div>
+
+                <div class="filter-box symptom-box">
+                    <i class="fa-solid fa-hand-holding-medical" style="color:#e74c3c; margin-left:8px;"></i>
+                    <select id="symptomFilter">
+                        <option value="all">ماذا يؤلمك؟ (اختر العَرَض)</option>
+                        <option value="وجع أسنان">وجع أسنان</option>
+                        <option value="خربطة بالضغط">خربطة بالضغط / خفقان</option>
+                        <option value="كسر">ألم مفاصل / كسر</option>
+                        <option value="مغص">مغص / ألم بطن</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h3 class="section-title"><i class="fa-solid fa-map-location-dot"></i> خريطة العيادات في سامراء</h3>
+        <div id="samarraMap" class="map-container"></div>
+
+        <div id="clinicsGrid" class="clinics-grid"></div>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
