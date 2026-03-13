@@ -1,52 +1,66 @@
-const CACHE_NAME = 'samarra-clinics-v2'; // تحديث رقم النسخة لضمان سحب التعديلات الجديدة
+// رفعنا رقم النسخة إلى v4 لكي نُجبر هواتف الناس على تنظيف الذاكرة القديمة
+const CACHE_NAME = 'samarra-clinics-v4'; 
 const urlsToCache = [
-    './',
-    './index.html',
-    './style.css',
-    './app.js',
-    './data.js',
-    './manifest.json',
-    'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+  './',
+  './index.html',
+  './style.css',
+  './app.js',
+  './manifest.json',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+  'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
 
-// 1. التثبيت (Install) - تخزين ملفاتك في هاتف المريض
+// 1. التثبيت
 self.addEventListener('install', event => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('تم تخزين ملفات دليل سامراء بنجاح');
-                return cache.addAll(urlsToCache);
-            })
-    );
-    // إجبار التطبيق على التحديث فوراً دون انتظار
-    self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+        console.log('تم تحديث ملفات النظام بنجاح');
+        return cache.addAll(urlsToCache);
+    })
+  );
+  self.skipWaiting();
 });
 
-// 2. جلب البيانات (Fetch) - تشغيل الموقع حتى لو كان الإنترنت مفصولاً
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                return response || fetch(event.request);
-            })
-    );
-});
-
-// 3. التفعيل (Activate) - تنظيف هواتف المرضى من النسخة القديمة للتطبيق
+// 2. التفعيل وحذف النسخ القديمة
 self.addEventListener('activate', event => {
-    const cacheWhitelist = [CACHE_NAME];
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        console.log('تم حذف النسخة القديمة وتحديث التطبيق');
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) return caches.delete(cache);
+        })
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+// 3. السحر هنا: جلب البيانات الجديدة فوراً إن وجدت (الشبكة أولاً لملف البيانات)
+self.addEventListener('fetch', event => {
+  // إذا كان الطلب يخص ملف بيانات الأطباء (data.js)
+  if (event.request.url.includes('data.js')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // جلب النسخة الجديدة من الإنترنت وتخزينها خفيةً
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, response.clone());
+            return response;
+          });
+        })
+        .catch(() => {
+          // إذا لم يكن هناك إنترنت، اعرض آخر نسخة محفوظة في الهاتف
+          return caches.match(event.request);
         })
     );
-    self.clients.claim();
+  } else {
+    // لبقية الملفات (التصميم والواجهة والخرائط)، استخدم الكاش لسرعة فائقة
+    event.respondWith(
+      caches.match(event.request).then(response => {
+        return response || fetch(event.request);
+      })
+    );
+  }
 });
